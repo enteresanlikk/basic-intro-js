@@ -1,3 +1,20 @@
+'use strict';
+let activeIntro = 1;
+
+const classes = {
+    box: 'intro-box',
+    text: 'intro-text',
+    list: 'intro-list',
+    buttonsContainer: 'intro-buttons-container',
+    button: 'intro-button',
+    buttons: {
+        skip: 'skip-button',
+        next: 'next-button',
+        prev: 'prev-button',
+        finish: 'finish-button'
+    }
+};
+
 class Intro{
     config(options){
         this.nextText=options.nextText || 'Next';
@@ -6,65 +23,65 @@ class Intro{
         this.finishText=options.finishText || 'Finish';
 
         this.intros = options.intros || [];
+
+        this.keyboardControl();
     }
 
     start(introIndex = 1){
         introIndex = introIndex-1 > this.intros.length-1 ? 0 : introIndex-1;
+        activeIntro = introIndex+1;
         const intro = this.intros[introIndex];
         const appendedDOM = intro.element;
         this.createIntro(intro, appendedDOM, introIndex);
     }
 
     createIntro(intro, appendedDOM, itemIndex){
-        if(!document.querySelector('.intro-box')){
+        if(!document.querySelector(`.${classes.box}`)){
             //Created Intro Box
             const introBoxDOM = document.createElement('div');
-            introBoxDOM.classList.add('intro-box');
+            introBoxDOM.classList.add(classes.box);
             introBoxDOM.classList.add(intro.position || 'top');
         
             //Intro Text Element
             const introTextDOM = document.createElement('div');
-            introTextDOM.classList.add('intro-text');
+            introTextDOM.classList.add(classes.text);
             introTextDOM.innerHTML = intro.text || 'Text not found!';
 
             //Intro Pageing
             const introPageDOM = document.createElement('div');
-            introPageDOM.classList.add('intro-list');
+            introPageDOM.classList.add(classes.list);
             const introPageText = document.createTextNode(`${(itemIndex+1)}/${this.intros.length}`);
             introPageDOM.appendChild(introPageText);
         
             //Intro Buttons Container
             const introButtonsContainerDOM = document.createElement('div');
-            introButtonsContainerDOM.classList.add('intro-buttons-container');
+            introButtonsContainerDOM.classList.add(classes.buttonsContainer);
                 //Skip Button
                 if(itemIndex!=this.intros.length-1){
                     const skipButtonDOM = document.createElement('button');
-                    skipButtonDOM.classList.add('intro-button');
-                    skipButtonDOM.classList.add('skip-button');
+                    skipButtonDOM.classList.add(classes.button);
+                    skipButtonDOM.classList.add(classes.buttons.skip);
                     skipButtonDOM.innerHTML = this.skipText;
                     skipButtonDOM.setAttribute('title', skipButtonDOM.textContent);
                     introButtonsContainerDOM.appendChild(skipButtonDOM);
                     skipButtonDOM.addEventListener('click', ()=>{
-                        introBoxDOM.remove();
-                        this.setScroll(0);
+                        this.removeIntro();
                     });
                 }
 
                 //Previous Button
                 if(itemIndex>0 && this.intros.length>1){
                     const prevButtonDOM = document.createElement('button');
-                    prevButtonDOM.classList.add('intro-button');
-                    prevButtonDOM.classList.add('prev-button');
-                    // if(itemIndex<=0){
-                    //     prevButtonDOM.setAttribute('disabled', 'disabled');
-                    // }
+                    prevButtonDOM.classList.add(classes.button);
+                    prevButtonDOM.classList.add(classes.buttons.prev);
                     prevButtonDOM.innerHTML = this.prevText;
                     prevButtonDOM.setAttribute('title', prevButtonDOM.textContent);
                     introButtonsContainerDOM.appendChild(prevButtonDOM);
 
                     prevButtonDOM.addEventListener('click', ()=>{
-                        document.querySelector('.intro-box').remove();
+                        this.removeIntroBox();
                         const index = --itemIndex;
+                        activeIntro = itemIndex+1;
                         this.createIntro(this.intros[index], this.intros[index].element, index);
                     });
                 }
@@ -72,28 +89,28 @@ class Intro{
                 //Next Button
                 if(itemIndex!=this.intros.length-1 && this.intros.length>1){
                     const nextButtonDOM = document.createElement('button');
-                    nextButtonDOM.classList.add('intro-button');
-                    nextButtonDOM.classList.add('next-button');
+                    nextButtonDOM.classList.add(classes.button);
+                    nextButtonDOM.classList.add(classes.buttons.next);
                     nextButtonDOM.innerHTML = this.nextText;
                     nextButtonDOM.setAttribute('title', nextButtonDOM.textContent);
                     introButtonsContainerDOM.appendChild(nextButtonDOM);
 
                     nextButtonDOM.addEventListener('click', ()=>{
-                        document.querySelector('.intro-box').remove();
+                        this.removeIntroBox();
                         const index = ++itemIndex;
+                        activeIntro = itemIndex+1;
                         this.createIntro(this.intros[index], this.intros[index].element, index);
                     });
                 }else{
                     const finishButtonDOM = document.createElement('button');
-                    finishButtonDOM.classList.add('intro-button');
-                    finishButtonDOM.classList.add('finish-button');
+                    finishButtonDOM.classList.add(classes.button);
+                    finishButtonDOM.classList.add(classes.buttons.finish);
                     finishButtonDOM.innerHTML = this.finishText;
                     finishButtonDOM.setAttribute('title', finishButtonDOM.textContent);
                     introButtonsContainerDOM.appendChild(finishButtonDOM);
 
                     finishButtonDOM.addEventListener('click', ()=>{
-                        introBoxDOM.remove();
-                        this.setScroll(0);
+                        this.removeIntro();
                     });
                 }
         
@@ -108,12 +125,49 @@ class Intro{
             this.setScroll(position.top);
 
         }else{
-            document.querySelector('.intro-box').remove();
+            this.removeIntroBox();
         }
+    }
+
+    removeIntroBox(){
+        document.querySelector(`.${classes.box}`).parentNode.removeChild(document.querySelector(`.${classes.box}`));
+    }
+
+    removeIntro(){
+        this.removeIntroBox();
+        this.setScroll(0);
     }
 
     setScroll(value){
         let stepValue = Math.floor(value);
         window.scrollTo(0, stepValue);
+    }
+
+    keyboardControl(){
+        const self = this;
+        document.addEventListener('keyup', function(e) {
+            if(!document.querySelector(`.${classes.box}`)) return false;
+            var x = event.which || event.keyCode;
+            if (x == 27) {  // 27 is the ESC key
+                self.removeIntro();
+            }
+
+            if (x == 39) {  // 39 is the Right key
+                self.intros.length<=activeIntro ? activeIntro=self.intros.length : ++activeIntro;
+                
+                if(self.intros.length>=activeIntro){
+                    self.removeIntro();
+                    self.start(activeIntro);
+                }
+            }
+
+            if (x == 37) {  // 37 is the Left key
+                activeIntro<=1 ? activeIntro=1 : --activeIntro;
+                if(activeIntro>0){
+                    self.removeIntro();
+                    self.start(activeIntro);
+                }
+            }
+        });
     }
 }
