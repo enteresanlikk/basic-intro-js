@@ -1,0 +1,121 @@
+.intro-box{
+    max-width: 300px;
+    min-width: 200px;
+    background: rgba(0, 159, 183, 0.85);
+    position: absolute;
+    border-radius: 3px;
+    text-align: left;
+    z-index: 555;
+}
+
+.intro-box::after{
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border: 10px solid transparent;
+}
+
+.intro-box.top{
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.intro-box.top::after{
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-color: rgba(0, 159, 183, 0.85);
+}
+
+.intro-box.bottom{
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.intro-box.bottom::after{
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-color: rgba(0, 159, 183, 0.85);
+}
+
+.intro-box.left{
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.intro-box.left::after{
+    top: 50%;
+    right: -20px;
+    transform: translateY(-50%);
+    border-left-color: rgba(0, 159, 183, 0.85);
+}
+
+.intro-box.right{
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+.intro-box.right::after{
+    top: 50%;
+    left: -20px;
+    transform: translateY(-50%);
+    border-right-color: rgba(0, 159, 183, 0.85);
+}
+
+.intro-text{
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+}
+
+.intro-list{
+    color: #fff;
+    text-align: center;
+    width: 100%;
+    font-size: 12px;
+}
+
+.intro-buttons-container{
+    width: 100%;
+    position: relative;
+    padding: 2px 10px;
+    text-align: center;
+}
+
+.intro-button{
+    padding: 5px 10px;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    transition: background .4s;
+    margin: 2px;
+}
+
+.intro-button i{
+    font-size: 12px;
+    padding: 0 2px;
+}
+
+.intro-button:disabled{
+    opacity: 0.5;
+    cursor: no-drop;
+}
+
+.intro-button:disabled:hover{
+    background: rgba(0, 159, 183, 0.85);
+    color: #fff;
+}
+
+.intro-button:hover{
+    background: #fff;
+    color: rgba(0, 159, 183, 0.85);
+}
