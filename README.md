@@ -1,4 +1,4 @@
-# Basic Intro JS
+# Basic Intro JS (Beta)
 
 With **this javascript plugin** you will be able to add comments to your projects. Very simple to use **:)**
 
